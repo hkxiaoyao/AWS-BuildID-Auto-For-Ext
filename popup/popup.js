@@ -808,51 +808,13 @@ async function loadMoEmailDomains() {
   moemailLoadDomainsBtn.disabled = true;
   moemailLoadDomainsBtn.textContent = '加载中...';
   try {
-    const baseUrl = moemailBaseUrlInput.value.trim().replace(/\/+$/, '');
-    const apiKey = moemailApiKeyInput.value.trim();
-
-    if (!baseUrl || !apiKey) {
-      throw new Error('请先输入邮箱地址和 API Key');
-    }
-
-    let response = await chrome.runtime.sendMessage({
+    const response = await chrome.runtime.sendMessage({
       type: 'MOEMAIL_LOAD_DOMAINS',
       config: {
-        baseUrl,
-        apiKey
+        baseUrl: moemailBaseUrlInput.value.trim(),
+        apiKey: moemailApiKeyInput.value.trim()
       }
     });
-
-    // 兼容旧后台：若返回未知消息类型，直接在 popup 端请求 /api/config
-    if (!response?.success && response?.error === '未知消息类型') {
-      const directResp = await fetch(`${baseUrl}/api/config`, {
-        method: 'GET',
-        headers: {
-          'X-API-Key': apiKey
-        }
-      });
-      const directData = await directResp.json();
-      const rawDomains = directData?.domains
-        || directData?.data?.domains
-        || directData?.data?.domainList
-        || directData?.data?.emailDomains
-        || directData?.config?.emailDomains
-        || directData?.emailDomains
-        || directData?.domainList
-        || [];
-      const domains = (Array.isArray(rawDomains) ? rawDomains : [])
-        .map(item => {
-          if (typeof item === 'string') return item;
-          if (item && typeof item === 'object') return item.domain || item.name || item.value || '';
-          return '';
-        })
-        .filter(Boolean);
-      response = {
-        success: directResp.ok && Array.isArray(domains) && domains.length > 0,
-        domains,
-        error: directResp.ok ? '未获取到域名列表' : (directData?.message || directData?.error || `请求失败(${directResp.status})`)
-      };
-    }
 
     if (!response.success) {
       throw new Error(response.error || '获取失败');
