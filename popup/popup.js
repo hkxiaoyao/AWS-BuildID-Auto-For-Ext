@@ -45,6 +45,22 @@ const gmailAuthBtn = document.getElementById('gmail-auth-btn');
 const gmailAuthStatus = document.getElementById('gmail-auth-status');
 const gmailSenderInput = document.getElementById('gmail-sender');
 const gmailSenderSaveBtn = document.getElementById('gmail-sender-save-btn');
+const mailProviderSelect = document.getElementById('mail-provider');
+const moemailConfigPanel = document.getElementById('moemail-config');
+const moemailBaseUrlInput = document.getElementById('moemail-base-url');
+const moemailApiKeyInput = document.getElementById('moemail-api-key');
+const moemailDomainInput = document.getElementById('moemail-domain');
+const moemailLoadDomainsBtn = document.getElementById('moemail-load-domains-btn');
+const moemailPrefixInput = document.getElementById('moemail-prefix');
+const moemailRandomLenInput = document.getElementById('moemail-random-len');
+const moemailExpirySelect = document.getElementById('moemail-expiry');
+const moemailSaveBtn = document.getElementById('moemail-save-btn');
+const moemailStatus = document.getElementById('moemail-status');
+
+const fingerprintEnabledInput = document.getElementById('fingerprint-enabled');
+const fingerprintRandomBtn = document.getElementById('fingerprint-random-btn');
+const fingerprintPreviewBtn = document.getElementById('fingerprint-preview-btn');
+const fingerprintPreview = document.getElementById('fingerprint-preview');
 
 // Token Pool 元素
 const poolApiKeyInput = document.getElementById('pool-api-key');
@@ -58,6 +74,15 @@ const poolPoints = document.getElementById('pool-points');
 
 // Gmail 配置
 let gmailAddress = '';
+let mailProvider = 'gmail';
+let moemailConfig = {
+  baseUrl: '',
+  apiKey: '',
+  domain: '',
+  fixedPrefix: '',
+  randomLength: 5,
+  expiry: 3600000
+};
 
 // Token Pool 配置
 const POOL_API_URL = 'http://localhost:8080';
@@ -402,11 +427,18 @@ async function startRegistration() {
   const loopCount = parseInt(loopCountInput.value) || 1;
   const concurrency = parseInt(concurrencyInput.value) || 1;
 
-  // 检查 Gmail 是否已配置
-  if (!gmailAddress) {
-    alert('请先配置 Gmail 地址');
-    gmailAddressInput.focus();
-    return;
+  if (mailProvider === 'gmail') {
+    if (!gmailAddress) {
+      alert('请先配置 Gmail 地址');
+      gmailAddressInput.focus();
+      return;
+    }
+  } else {
+    if (!moemailConfig.baseUrl || !moemailConfig.apiKey || !moemailConfig.domain) {
+      alert('请先完整配置 MoEmail 地址、Key、域名');
+      moemailBaseUrlInput.focus();
+      return;
+    }
   }
 
   // 验证输入
@@ -420,7 +452,7 @@ async function startRegistration() {
   }
 
   // Gmail 别名模式建议并发为 1
-  if (concurrency > 1) {
+  if (mailProvider === 'gmail' && concurrency > 1) {
     const confirm = window.confirm('使用 Gmail 别名模式时，建议并发设为 1（需要手动输入验证码）。\n\n是否继续？');
     if (!confirm) return;
   }
@@ -432,7 +464,9 @@ async function startRegistration() {
       type: 'START_BATCH_REGISTRATION',
       loopCount,
       concurrency,
-      gmailAddress  // 传递 Gmail 地址
+      gmailAddress,
+      mailProvider,
+      moemailConfig
     });
     console.log('[Popup] 注册响应:', response);
 
@@ -713,6 +747,159 @@ function updateGmailStatus(saved) {
   } else {
     gmailStatus.textContent = '';
     gmailStatus.classList.remove('error');
+  }
+}
+
+function updateProviderUI() {
+  const isMoEmail = mailProvider === 'moemail';
+  moemailConfigPanel.style.display = isMoEmail ? 'flex' : 'none';
+  document.querySelector('.gmail-config').style.display = isMoEmail ? 'none' : 'flex';
+}
+
+async function saveMailProvider() {
+  mailProvider = mailProviderSelect.value;
+  await chrome.storage.local.set({ mailProvider });
+  updateProviderUI();
+}
+
+async function loadMoEmailConfig() {
+  const stored = await chrome.storage.local.get(['mailProvider', 'moemailConfig']);
+  if (stored.mailProvider) {
+    mailProvider = stored.mailProvider;
+    mailProviderSelect.value = mailProvider;
+  }
+
+  if (stored.moemailConfig) {
+    moemailConfig = { ...moemailConfig, ...stored.moemailConfig };
+  }
+
+  moemailBaseUrlInput.value = moemailConfig.baseUrl || '';
+  moemailApiKeyInput.value = moemailConfig.apiKey || '';
+  moemailDomainInput.value = moemailConfig.domain || '';
+  moemailPrefixInput.value = moemailConfig.fixedPrefix || '';
+  moemailRandomLenInput.value = moemailConfig.randomLength || 5;
+  moemailExpirySelect.value = String(moemailConfig.expiry || 3600000);
+  updateProviderUI();
+}
+
+async function saveMoEmailConfig() {
+  const config = {
+    baseUrl: moemailBaseUrlInput.value.trim().replace(/\/+$/, ''),
+    apiKey: moemailApiKeyInput.value.trim(),
+    domain: moemailDomainInput.value.trim(),
+    fixedPrefix: moemailPrefixInput.value.trim(),
+    randomLength: Math.max(1, Math.min(16, parseInt(moemailRandomLenInput.value, 10) || 5)),
+    expiry: parseInt(moemailExpirySelect.value, 10)
+  };
+
+  if (!config.baseUrl || !config.apiKey || !config.domain) {
+    moemailStatus.textContent = '请填写地址 / key / 域名';
+    moemailStatus.classList.add('error');
+    return;
+  }
+
+  moemailConfig = config;
+  await chrome.storage.local.set({ moemailConfig: config });
+  moemailStatus.textContent = `✓ 已保存，示例邮箱: ${(config.fixedPrefix || '') + 'x'.repeat(config.randomLength)}@${config.domain}`;
+  moemailStatus.classList.remove('error');
+}
+
+async function loadMoEmailDomains() {
+  moemailLoadDomainsBtn.disabled = true;
+  moemailLoadDomainsBtn.textContent = '加载中...';
+  try {
+    const baseUrl = moemailBaseUrlInput.value.trim().replace(/\/+$/, '');
+    const apiKey = moemailApiKeyInput.value.trim();
+
+    if (!baseUrl || !apiKey) {
+      throw new Error('请先输入邮箱地址和 API Key');
+    }
+
+    let response = await chrome.runtime.sendMessage({
+      type: 'MOEMAIL_LOAD_DOMAINS',
+      config: {
+        baseUrl,
+        apiKey
+      }
+    });
+
+    // 兼容旧后台：若返回未知消息类型，直接在 popup 端请求 /api/config
+    if (!response?.success && response?.error === '未知消息类型') {
+      const directResp = await fetch(`${baseUrl}/api/config`, {
+        method: 'GET',
+        headers: {
+          'X-API-Key': apiKey
+        }
+      });
+      const directData = await directResp.json();
+      const rawDomains = directData?.domains
+        || directData?.data?.domains
+        || directData?.data?.domainList
+        || directData?.data?.emailDomains
+        || directData?.config?.emailDomains
+        || directData?.emailDomains
+        || directData?.domainList
+        || [];
+      const domains = (Array.isArray(rawDomains) ? rawDomains : [])
+        .map(item => {
+          if (typeof item === 'string') return item;
+          if (item && typeof item === 'object') return item.domain || item.name || item.value || '';
+          return '';
+        })
+        .filter(Boolean);
+      response = {
+        success: directResp.ok && Array.isArray(domains) && domains.length > 0,
+        domains,
+        error: directResp.ok ? '未获取到域名列表' : (directData?.message || directData?.error || `请求失败(${directResp.status})`)
+      };
+    }
+
+    if (!response.success) {
+      throw new Error(response.error || '获取失败');
+    }
+
+    if (response.domains?.length > 0) {
+      moemailDomainInput.value = response.domains[0];
+      moemailStatus.textContent = `✓ 获取成功，共 ${response.domains.length} 个域名`;
+      moemailStatus.classList.remove('error');
+    }
+  } catch (error) {
+    moemailStatus.textContent = '获取域名失败: ' + error.message;
+    moemailStatus.classList.add('error');
+  } finally {
+    moemailLoadDomainsBtn.disabled = false;
+    moemailLoadDomainsBtn.textContent = '获取域名';
+  }
+}
+
+function renderFingerprintPreview(fp) {
+  if (!fp) {
+    fingerprintPreview.value = '';
+    return;
+  }
+  fingerprintPreview.value = JSON.stringify(fp, null, 2);
+}
+
+async function loadFingerprintConfig() {
+  const response = await chrome.runtime.sendMessage({ type: 'FINGERPRINT_GET_CONFIG' });
+  if (!response?.success) return;
+  fingerprintEnabledInput.checked = !!response.settings?.enabled;
+  renderFingerprintPreview(response.current);
+}
+
+async function saveFingerprintEnabled() {
+  await chrome.runtime.sendMessage({
+    type: 'FINGERPRINT_SET_CONFIG',
+    settings: {
+      enabled: fingerprintEnabledInput.checked
+    }
+  });
+}
+
+async function randomizeFingerprint() {
+  const response = await chrome.runtime.sendMessage({ type: 'FINGERPRINT_RANDOMIZE' });
+  if (response?.success) {
+    renderFingerprintPreview(response.fingerprint);
   }
 }
 
@@ -998,9 +1185,11 @@ async function init() {
 
   // 加载 Gmail 配置
   await loadGmailConfig();
+  await loadMoEmailConfig();
 
   // 加载 Gmail API 配置
   await loadGmailApiConfig();
+  await loadFingerprintConfig();
 
   // 加载 Token Pool 配置
   await loadPoolConfig();
@@ -1032,6 +1221,13 @@ async function init() {
   // Gmail API 授权事件
   gmailAuthBtn.addEventListener('click', authorizeGmailApi);
   gmailSenderSaveBtn.addEventListener('click', saveGmailSender);
+  mailProviderSelect.addEventListener('change', saveMailProvider);
+  moemailSaveBtn.addEventListener('click', saveMoEmailConfig);
+  moemailLoadDomainsBtn.addEventListener('click', loadMoEmailDomains);
+
+  fingerprintEnabledInput.addEventListener('change', saveFingerprintEnabled);
+  fingerprintRandomBtn.addEventListener('click', randomizeFingerprint);
+  fingerprintPreviewBtn.addEventListener('click', loadFingerprintConfig);
 
   // Token Pool 事件
   poolConnectBtn.addEventListener('click', connectToPool);
