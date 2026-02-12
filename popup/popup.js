@@ -56,8 +56,6 @@ const moemailRandomLenInput = document.getElementById('moemail-random-len');
 const moemailExpirySelect = document.getElementById('moemail-expiry');
 const moemailSaveBtn = document.getElementById('moemail-save-btn');
 const moemailStatus = document.getElementById('moemail-status');
-const moemailDebugEnabledInput = document.getElementById('moemail-debug-enabled');
-const moemailDebugOutput = document.getElementById('moemail-debug-output');
 
 const fingerprintEnabledInput = document.getElementById('fingerprint-enabled');
 const fingerprintRandomBtn = document.getElementById('fingerprint-random-btn');
@@ -85,7 +83,6 @@ let moemailConfig = {
   randomLength: 5,
   expiry: 3600000
 };
-let moemailDebugEnabled = false;
 
 // Token Pool 配置
 const POOL_API_URL = 'http://localhost:8080';
@@ -766,7 +763,7 @@ async function saveMailProvider() {
 }
 
 async function loadMoEmailConfig() {
-  const stored = await chrome.storage.local.get(['mailProvider', 'moemailConfig', 'moemailDebugEnabled']);
+  const stored = await chrome.storage.local.get(['mailProvider', 'moemailConfig']);
   if (stored.mailProvider) {
     mailProvider = stored.mailProvider;
     mailProviderSelect.value = mailProvider;
@@ -776,38 +773,13 @@ async function loadMoEmailConfig() {
     moemailConfig = { ...moemailConfig, ...stored.moemailConfig };
   }
 
-  // 若已配置 MoEmail 但未显式保存 provider，默认切到 MoEmail，避免用户找不到面板
-  if (!stored.mailProvider && stored.moemailConfig?.baseUrl && stored.moemailConfig?.apiKey) {
-    mailProvider = 'moemail';
-    mailProviderSelect.value = 'moemail';
-    await chrome.storage.local.set({ mailProvider: 'moemail' });
-  }
-  moemailDebugEnabled = !!stored.moemailDebugEnabled;
-
   moemailBaseUrlInput.value = moemailConfig.baseUrl || '';
   moemailApiKeyInput.value = moemailConfig.apiKey || '';
   moemailDomainInput.value = moemailConfig.domain || '';
   moemailPrefixInput.value = moemailConfig.fixedPrefix || '';
   moemailRandomLenInput.value = moemailConfig.randomLength || 5;
   moemailExpirySelect.value = String(moemailConfig.expiry || 3600000);
-  if (moemailDebugEnabledInput) {
-    moemailDebugEnabledInput.checked = moemailDebugEnabled;
-  }
-  if (moemailDebugOutput) {
-    moemailDebugOutput.style.display = moemailDebugEnabled ? 'block' : 'none';
-  }
   updateProviderUI();
-}
-
-async function saveMoEmailDebugConfig() {
-  moemailDebugEnabled = !!moemailDebugEnabledInput?.checked;
-  if (moemailDebugOutput) {
-    moemailDebugOutput.style.display = moemailDebugEnabled ? 'block' : 'none';
-  }
-  if (!moemailDebugEnabled && moemailDebugOutput) {
-    moemailDebugOutput.value = '';
-  }
-  await chrome.storage.local.set({ moemailDebugEnabled });
 }
 
 async function saveMoEmailConfig() {
@@ -836,53 +808,13 @@ async function loadMoEmailDomains() {
   moemailLoadDomainsBtn.disabled = true;
   moemailLoadDomainsBtn.textContent = '加载中...';
   try {
-    const baseUrl = moemailBaseUrlInput.value.trim().replace(/\/+$/, '');
-    const apiKey = moemailApiKeyInput.value.trim();
-
-    if (!baseUrl || !apiKey) {
-      throw new Error('请先输入邮箱地址和 API Key');
-    }
-
-    let response = await chrome.runtime.sendMessage({
+    const response = await chrome.runtime.sendMessage({
       type: 'MOEMAIL_LOAD_DOMAINS',
-      debug: moemailDebugEnabled,
       config: {
-        baseUrl,
-        apiKey
+        baseUrl: moemailBaseUrlInput.value.trim(),
+        apiKey: moemailApiKeyInput.value.trim()
       }
     });
-
-    if (moemailDebugEnabled && response?.debug && moemailDebugOutput) {
-      moemailDebugOutput.style.display = 'block';
-      moemailDebugOutput.value = JSON.stringify(response.debug, null, 2);
-    }
-
-    // 兼容旧后台：若返回未知消息类型，直接在 popup 端请求 /api/config
-    if (!response?.success && response?.error === '未知消息类型') {
-      const directResp = await fetch(`${baseUrl}/api/config`, {
-        method: 'GET',
-        headers: {
-          'X-API-Key': apiKey
-        }
-      });
-      const directData = await directResp.json();
-      const domains = extractDomainListForPopup(directData);
-      response = {
-        success: directResp.ok && Array.isArray(domains) && domains.length > 0,
-        domains,
-        error: directResp.ok ? '未获取到域名列表' : (directData?.message || directData?.error || `请求失败(${directResp.status})`)
-      };
-      if (moemailDebugEnabled && moemailDebugOutput) {
-        moemailDebugOutput.style.display = 'block';
-        moemailDebugOutput.value = JSON.stringify({
-          source: 'popup-direct-fetch',
-          status: directResp.status,
-          ok: directResp.ok,
-          parsedDomains: domains,
-          rawConfig: directData
-        }, null, 2);
-      }
-    }
 
     if (!response.success) {
       throw new Error(response.error || '获取失败');
@@ -896,55 +828,10 @@ async function loadMoEmailDomains() {
   } catch (error) {
     moemailStatus.textContent = '获取域名失败: ' + error.message;
     moemailStatus.classList.add('error');
-    if (moemailDebugEnabled && moemailDebugOutput) {
-      moemailDebugOutput.style.display = 'block';
-      moemailDebugOutput.value = `${moemailDebugOutput.value || ''}\n[ERROR] ${error.message}`.trim();
-    }
   } finally {
     moemailLoadDomainsBtn.disabled = false;
     moemailLoadDomainsBtn.textContent = '获取域名';
   }
-}
-
-function extractDomainListForPopup(input) {
-  const found = new Set();
-  const domainRegex = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
-
-  const pushCandidate = (value) => {
-    if (typeof value !== 'string') return;
-    const parts = value
-      .split(/[\s,;|]+/)
-      .map(part => part.trim().replace(/^@/, '').toLowerCase())
-      .filter(Boolean);
-
-    for (const normalized of parts) {
-      if (domainRegex.test(normalized)) {
-        found.add(normalized);
-      }
-    }
-  };
-
-  const walk = (node) => {
-    if (!node) return;
-    if (typeof node === 'string') {
-      pushCandidate(node);
-      return;
-    }
-    if (Array.isArray(node)) {
-      node.forEach(walk);
-      return;
-    }
-    if (typeof node === 'object') {
-      pushCandidate(node.domain);
-      pushCandidate(node.name);
-      pushCandidate(node.value);
-      pushCandidate(node.host);
-      Object.values(node).forEach(walk);
-    }
-  };
-
-  walk(input);
-  return Array.from(found);
 }
 
 function renderFingerprintPreview(fp) {
@@ -1299,9 +1186,6 @@ async function init() {
   mailProviderSelect.addEventListener('change', saveMailProvider);
   moemailSaveBtn.addEventListener('click', saveMoEmailConfig);
   moemailLoadDomainsBtn.addEventListener('click', loadMoEmailDomains);
-  if (moemailDebugEnabledInput) {
-    moemailDebugEnabledInput.addEventListener('change', saveMoEmailDebugConfig);
-  }
 
   fingerprintEnabledInput.addEventListener('change', saveFingerprintEnabled);
   fingerprintRandomBtn.addEventListener('click', randomizeFingerprint);

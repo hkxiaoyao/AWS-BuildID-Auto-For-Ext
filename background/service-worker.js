@@ -1131,26 +1131,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'MOEMAIL_LOAD_DOMAINS':
-    case 'MOEMAIL_GET_DOMAINS':
-    case 'GET_MOEMAIL_DOMAINS':
       (async () => {
         try {
           const client = new MoEmailClient(message.config || {});
-          if (message.debug) {
-            const result = await client.fetchDomainsWithDebug();
-            sendResponse({
-              success: result.domains.length > 0,
-              domains: result.domains,
-              debug: {
-                topLevelKeys: result.topLevelKeys,
-                rawConfig: result.rawConfig
-              },
-              error: result.domains.length > 0 ? null : '未获取到域名列表'
-            });
-          } else {
-            const domains = await client.fetchDomains();
-            sendResponse({ success: true, domains });
-          }
+          const domains = await client.fetchDomains();
+          sendResponse({ success: true, domains });
         } catch (error) {
           sendResponse({ success: false, error: error.message });
         }
