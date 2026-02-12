@@ -23,7 +23,8 @@
     "https://signin.aws.amazon.com/*",
     "https://*.amazonaws.com/*",
     "https://mailfly.codeforge.top/*",
-    "https://view.awsapps.com/*"
+    "https://view.awsapps.com/*",
+    "https://*/*"
   ],
   "incognito": "spanning",
   "action": {

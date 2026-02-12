@@ -41,6 +41,13 @@
       <div class="section-header">
         <h2>邮箱配置</h2>
       </div>
+      <div class="provider-switch-row">
+        <label>邮箱模式</label>
+        <select id="mail-provider" class="gmail-input provider-select">
+          <option value="gmail">Gmail 别名</option>
+          <option value="moemail">MoEmail 临时邮箱</option>
+        </select>
+      </div>
       <div class="gmail-config">
         <div class="gmail-input-row">
           <input type="email" id="gmail-address" placeholder="输入你的 Gmail 地址" class="gmail-input">
@@ -62,6 +69,54 @@
         <p class="gmail-hint">授权后可自动获取验证码，无需手动填写</p>
         <p class="gmail-status" id="gmail-status"></p>
       </div>
+
+      <div id="moemail-config" class="moemail-config" style="display: none;">
+        <div class="gmail-input-row">
+          <input type="text" id="moemail-base-url" placeholder="邮箱地址(例如: https://mail.112857.xyz)" class="gmail-input">
+        </div>
+        <div class="gmail-input-row">
+          <input type="text" id="moemail-api-key" placeholder="API Key" class="gmail-input">
+        </div>
+        <div class="gmail-input-row">
+          <input type="text" id="moemail-domain" placeholder="邮箱域名后缀(可通过配置接口获取)" class="gmail-input">
+          <button id="moemail-load-domains-btn" class="btn-small">获取域名</button>
+        </div>
+        <div class="gmail-input-row debug-row">
+          <label class="toggle-row"><input type="checkbox" id="moemail-debug-enabled">调试模式</label>
+        </div>
+        <textarea id="moemail-debug-output" class="fingerprint-preview" style="display:none;" readonly placeholder="MoEmail 调试信息输出（请求状态、解析域名、原始配置）"></textarea>
+        <div class="gmail-input-row">
+          <input type="text" id="moemail-prefix" placeholder="固定前缀(可空，如: wxy)" class="gmail-input">
+          <input type="number" id="moemail-random-len" min="1" max="16" value="5" class="setting-input moemail-len-input" title="随机位数">
+        </div>
+        <div class="gmail-input-row">
+          <label class="moemail-expire-label">有效期</label>
+          <select id="moemail-expiry" class="gmail-input">
+            <option value="3600000">1小时</option>
+            <option value="86400000">1天</option>
+            <option value="604800000">7天</option>
+            <option value="0">永久</option>
+          </select>
+          <button id="moemail-save-btn" class="btn-small">保存</button>
+        </div>
+        <p class="gmail-hint">邮箱格式：固定前缀 + 随机字符 @ 域名，例如 wxy43g4f@111.com</p>
+        <p class="gmail-status" id="moemail-status"></p>
+      </div>
+    </div>
+
+    <div id="fingerprint-section" class="section">
+      <div class="section-header">
+        <h2>随机指纹</h2>
+        <label class="toggle-row">
+          <input type="checkbox" id="fingerprint-enabled">
+          <span>开启</span>
+        </label>
+      </div>
+      <div class="section-actions">
+        <button id="fingerprint-random-btn" class="btn-small btn-small-primary">手动随机</button>
+        <button id="fingerprint-preview-btn" class="btn-small">刷新预览</button>
+      </div>
+      <textarea id="fingerprint-preview" class="fingerprint-preview" readonly placeholder="当前指纹预览"></textarea>
     </div>
 
     <!-- 设置区域 -->
