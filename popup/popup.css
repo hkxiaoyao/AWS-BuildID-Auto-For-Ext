@@ -796,10 +796,6 @@ body {
   font-size: 12px;
 }
 
-.debug-row {
-  justify-content: flex-end;
-}
-
 .toggle-row {
   display: inline-flex;
   align-items: center;
