@@ -1131,8 +1131,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'MOEMAIL_LOAD_DOMAINS':
-    case 'MOEMAIL_GET_DOMAINS':
-    case 'GET_MOEMAIL_DOMAINS':
       (async () => {
         try {
           const client = new MoEmailClient(message.config || {});
