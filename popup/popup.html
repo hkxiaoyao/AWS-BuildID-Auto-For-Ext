@@ -81,9 +81,6 @@
           <input type="text" id="moemail-domain" placeholder="邮箱域名后缀(可通过配置接口获取)" class="gmail-input">
           <button id="moemail-load-domains-btn" class="btn-small">获取域名</button>
         </div>
-        <div class="gmail-input-row debug-row">
-          <label class="toggle-row"><input type="checkbox" id="moemail-debug-enabled">调试模式</label>
-        </div>
         <div class="gmail-input-row">
           <input type="text" id="moemail-prefix" placeholder="固定前缀(可空，如: wxy)" class="gmail-input">
           <input type="number" id="moemail-random-len" min="1" max="16" value="5" class="setting-input moemail-len-input" title="随机位数">
@@ -100,7 +97,6 @@
         </div>
         <p class="gmail-hint">邮箱格式：固定前缀 + 随机字符 @ 域名，例如 wxy43g4f@111.com</p>
         <p class="gmail-status" id="moemail-status"></p>
-        <textarea id="moemail-debug-output" class="fingerprint-preview" style="display:none;" readonly placeholder="调试信息"></textarea>
       </div>
     </div>
 
