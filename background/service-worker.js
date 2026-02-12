@@ -3,13 +3,28 @@
  * 管理注册状态和流程控制，支持多窗口并发注册
  */
 
-import { GmailAliasClient } from '../lib/mail-api.js';
+import { GmailAliasClient, MoEmailClient } from '../lib/mail-api.js';
 import { GmailApiClient } from '../lib/gmail-api.js';
 import { AWSDeviceAuth, validateToken, refreshAndValidateToken } from '../lib/oidc-api.js';
 import { generatePassword, generateName, generateEmailPrefix } from '../lib/utils.js';
+import { generateFingerprint } from '../lib/fingerprint.js';
 
 // Gmail 配置
 let gmailBaseAddress = '';
+let mailProvider = 'gmail';
+let moemailConfig = {
+  baseUrl: '',
+  apiKey: '',
+  domain: '',
+  fixedPrefix: '',
+  randomLength: 5,
+  expiry: 3600000
+};
+
+let fingerprintSettings = {
+  enabled: false
+};
+let currentFingerprint = null;
 
 // Gmail API 配置
 let gmailApiClient = null;
@@ -146,6 +161,49 @@ function updateSession(sessionId, updates) {
   }
 }
 
+async function applyFingerprintToTab(tabId) {
+  if (!fingerprintSettings.enabled || !currentFingerprint) {
+    return;
+  }
+
+  await chrome.scripting.executeScript({
+    target: { tabId },
+    world: 'MAIN',
+    injectImmediately: true,
+    func: (fp) => {
+      const override = (obj, prop, value) => {
+        try {
+          Object.defineProperty(obj, prop, { get: () => value, configurable: true });
+        } catch (e) {}
+      };
+
+      override(navigator, 'userAgent', fp.userAgent);
+      override(navigator, 'platform', fp.platform);
+      override(navigator, 'language', fp.language);
+      override(navigator, 'languages', fp.languages);
+      override(navigator, 'hardwareConcurrency', fp.hardwareConcurrency);
+      override(navigator, 'deviceMemory', fp.deviceMemory);
+
+      override(screen, 'width', fp.screen.width);
+      override(screen, 'height', fp.screen.height);
+      override(screen, 'availWidth', fp.screen.availWidth);
+      override(screen, 'availHeight', fp.screen.availHeight);
+      override(screen, 'colorDepth', fp.screen.colorDepth);
+      override(screen, 'pixelDepth', fp.screen.pixelDepth);
+
+      const getParameter = WebGLRenderingContext?.prototype?.getParameter;
+      if (getParameter) {
+        WebGLRenderingContext.prototype.getParameter = function(parameter) {
+          if (parameter === 37445) return fp.webglVendor;
+          if (parameter === 37446) return fp.webglRenderer;
+          return getParameter.call(this, parameter);
+        };
+      }
+    },
+    args: [currentFingerprint]
+  });
+}
+
 // ============== 会话管理 ==============
 
 /**
@@ -251,23 +309,28 @@ async function runSessionRegistration(session) {
     session.lastName = lastName;
     session.password = password;
 
-    // 步骤 2: 生成 Gmail 别名邮箱
-    updateSession(session.id, { step: '生成邮箱别名...' });
-    
-    if (!gmailBaseAddress) {
-      throw new Error('未配置 Gmail 地址，请在插件设置中配置');
+    // 步骤 2: 生成邮箱
+    updateSession(session.id, { step: '生成邮箱...' });
+
+    let email;
+    if (mailProvider === 'moemail') {
+      session.mailClient = new MoEmailClient(moemailConfig);
+      if (!session.mailClient.isConfigured()) {
+        throw new Error('MoEmail 配置不完整，请先配置地址 / Key / 域名');
+      }
+      email = await session.mailClient.createInbox();
+    } else {
+      if (!gmailBaseAddress) {
+        throw new Error('未配置 Gmail 地址，请在插件设置中配置');
+      }
+
+      session.mailClient = new GmailAliasClient({ baseEmail: gmailBaseAddress });
+      const nameSuffix = `${firstName.toLowerCase()}${lastName.toLowerCase()}`.slice(0, 8);
+      email = await session.mailClient.createInbox({
+        prefix: nameSuffix,
+        mode: 'auto'
+      });
     }
-    
-    session.mailClient = new GmailAliasClient({ baseEmail: gmailBaseAddress });
-
-    // 自动生成邮箱变体（+号/点号/大小写组合）
-    // 可选后缀包含姓名信息，便于识别
-    const nameSuffix = `${firstName.toLowerCase()}${lastName.toLowerCase()}`.slice(0, 8);
-
-    const email = await session.mailClient.createInbox({
-      prefix: nameSuffix,  // 可选的姓名后缀
-      mode: 'auto'         // 自动轮换变体方式
-    });
     session.email = email;
     session.manualVerification = true; // 标记需要手动输入验证码
     updateSession(session.id, { email });
@@ -322,6 +385,12 @@ async function runSessionRegistration(session) {
       session.windowId = window.id;
       session.tabId = window.tabs[0].id;
       console.log(`[Session ${session.id}] 无痕窗口创建成功: windowId=${window.id}, tabId=${session.tabId}`);
+
+      try {
+        await applyFingerprintToTab(session.tabId);
+      } catch (e) {
+        console.warn(`[Session ${session.id}] 指纹注入失败:`, e.message);
+      }
 
       // 等待页面加载完成
       updateSession(session.id, { step: '等待页面加载...' });
@@ -617,18 +686,30 @@ async function validateAllTokens() {
 /**
  * 开始批量注册
  */
-async function startBatchRegistration(loopCount, concurrency, gmailAddress) {
+async function startBatchRegistration(loopCount, concurrency, options = {}) {
   if (isRunning) {
     return { success: false, error: '已有注册任务在运行' };
   }
 
-  // 检查 Gmail 配置
-  if (!gmailAddress) {
+  mailProvider = options.mailProvider || 'gmail';
+  gmailBaseAddress = options.gmailAddress || '';
+  if (options.moemailConfig) {
+    moemailConfig = { ...moemailConfig, ...options.moemailConfig };
+  }
+
+  if (mailProvider === 'moemail') {
+    const checker = new MoEmailClient(moemailConfig);
+    if (!checker.isConfigured()) {
+      return { success: false, error: 'MoEmail 配置不完整（地址 / Key / 域名）' };
+    }
+  } else if (!gmailBaseAddress) {
     return { success: false, error: '未配置 Gmail 地址' };
   }
-  
-  // 设置全局 Gmail 地址
-  gmailBaseAddress = gmailAddress;
+
+  if (fingerprintSettings.enabled && !currentFingerprint) {
+    currentFingerprint = generateFingerprint();
+    await chrome.storage.local.set({ currentFingerprint });
+  }
 
   isRunning = true;
   shouldStop = false;
@@ -648,7 +729,7 @@ async function startBatchRegistration(loopCount, concurrency, gmailAddress) {
   sessions.clear();
   broadcastState();
 
-  console.log(`[Service Worker] 开始批量注册: 目标=${loopCount}, 并发=${concurrency}, Gmail=${gmailAddress}`);
+  console.log(`[Service Worker] 开始批量注册: 目标=${loopCount}, 并发=${concurrency}, provider=${mailProvider}`);
 
   // 创建任务队列
   taskQueue = [];
@@ -868,7 +949,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'START_BATCH_REGISTRATION':
-      startBatchRegistration(message.loopCount || 1, message.concurrency || 1, message.gmailAddress)
+      startBatchRegistration(message.loopCount || 1, message.concurrency || 1, {
+        gmailAddress: message.gmailAddress,
+        mailProvider: message.mailProvider,
+        moemailConfig: message.moemailConfig
+      })
         .then(sendResponse);
       return true;
 
@@ -1045,6 +1130,56 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
       break;
 
+    case 'MOEMAIL_LOAD_DOMAINS':
+    case 'MOEMAIL_GET_DOMAINS':
+    case 'GET_MOEMAIL_DOMAINS':
+      (async () => {
+        try {
+          const client = new MoEmailClient(message.config || {});
+          if (message.debug) {
+            const result = await client.fetchDomainsWithDebug();
+            sendResponse({
+              success: result.domains.length > 0,
+              domains: result.domains,
+              debug: {
+                topLevelKeys: result.topLevelKeys,
+                rawConfig: result.rawConfig
+              },
+              error: result.domains.length > 0 ? null : '未获取到域名列表'
+            });
+          } else {
+            const domains = await client.fetchDomains();
+            sendResponse({ success: true, domains });
+          }
+        } catch (error) {
+          sendResponse({ success: false, error: error.message });
+        }
+      })();
+      return true;
+
+    case 'FINGERPRINT_GET_CONFIG':
+      sendResponse({
+        success: true,
+        settings: fingerprintSettings,
+        current: currentFingerprint
+      });
+      break;
+
+    case 'FINGERPRINT_SET_CONFIG':
+      fingerprintSettings = {
+        ...fingerprintSettings,
+        ...(message.settings || {})
+      };
+      chrome.storage.local.set({ fingerprintSettings });
+      sendResponse({ success: true, settings: fingerprintSettings });
+      break;
+
+    case 'FINGERPRINT_RANDOMIZE':
+      currentFingerprint = generateFingerprint();
+      chrome.storage.local.set({ currentFingerprint });
+      sendResponse({ success: true, fingerprint: currentFingerprint });
+      break;
+
     default:
       sendResponse({ error: '未知消息类型' });
   }
@@ -1077,7 +1212,16 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // 恢复历史记录和 Gmail API 配置
-chrome.storage.local.get(['registrationHistory', 'gmailApiAuthorized', 'gmailSenderFilter']).then((stored) => {
+chrome.storage.local.get([
+  'registrationHistory',
+  'gmailApiAuthorized',
+  'gmailSenderFilter',
+  'fingerprintSettings',
+  'currentFingerprint',
+  'mailProvider',
+  'moemailConfig',
+  'gmailAddress'
+]).then((stored) => {
   if (stored.registrationHistory) {
     registrationHistory = stored.registrationHistory;
     console.log('[Service Worker] 恢复历史记录:', registrationHistory.length, '条');
@@ -1086,6 +1230,23 @@ chrome.storage.local.get(['registrationHistory', 'gmailApiAuthorized', 'gmailSen
   // 恢复 Gmail API 配置
   if (stored.gmailSenderFilter) {
     gmailSenderFilter = stored.gmailSenderFilter;
+  }
+
+  if (stored.mailProvider) {
+    mailProvider = stored.mailProvider;
+  }
+  if (stored.gmailAddress) {
+    gmailBaseAddress = stored.gmailAddress;
+  }
+  if (stored.moemailConfig) {
+    moemailConfig = { ...moemailConfig, ...stored.moemailConfig };
+  }
+
+  if (stored.fingerprintSettings) {
+    fingerprintSettings = { ...fingerprintSettings, ...stored.fingerprintSettings };
+  }
+  if (stored.currentFingerprint) {
+    currentFingerprint = stored.currentFingerprint;
   }
 
   // 检查 Gmail API 授权状态

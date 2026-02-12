@@ -695,6 +695,17 @@ body {
   gap: 6px;
 }
 
+.provider-switch-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.provider-select {
+  min-width: 150px;
+}
+
 .gmail-input-row {
   display: flex;
   gap: 8px;
@@ -765,6 +776,49 @@ body {
   flex: 1;
   font-size: 11px !important;
   padding: 6px 10px !important;
+}
+
+.moemail-config {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.moemail-len-input {
+  max-width: 80px;
+}
+
+.moemail-expire-label {
+  display: inline-flex;
+  align-items: center;
+  color: #666;
+  font-size: 12px;
+}
+
+.debug-row {
+  justify-content: flex-end;
+}
+
+.toggle-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 12px;
+}
+
+.fingerprint-preview {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+  padding: 8px;
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  resize: vertical;
+  margin-top: 8px;
 }
 
 /* Token Pool 区域 */
