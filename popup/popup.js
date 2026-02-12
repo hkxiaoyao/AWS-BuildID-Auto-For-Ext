@@ -808,37 +808,13 @@ async function loadMoEmailDomains() {
   moemailLoadDomainsBtn.disabled = true;
   moemailLoadDomainsBtn.textContent = '加载中...';
   try {
-    const baseUrl = moemailBaseUrlInput.value.trim().replace(/\/+$/, '');
-    const apiKey = moemailApiKeyInput.value.trim();
-
-    if (!baseUrl || !apiKey) {
-      throw new Error('请先输入邮箱地址和 API Key');
-    }
-
-    let response = await chrome.runtime.sendMessage({
+    const response = await chrome.runtime.sendMessage({
       type: 'MOEMAIL_LOAD_DOMAINS',
       config: {
-        baseUrl,
-        apiKey
+        baseUrl: moemailBaseUrlInput.value.trim(),
+        apiKey: moemailApiKeyInput.value.trim()
       }
     });
-
-    // 兼容旧后台：若返回未知消息类型，直接在 popup 端请求 /api/config
-    if (!response?.success && response?.error === '未知消息类型') {
-      const directResp = await fetch(`${baseUrl}/api/config`, {
-        method: 'GET',
-        headers: {
-          'X-API-Key': apiKey
-        }
-      });
-      const directData = await directResp.json();
-      const domains = extractDomainListForPopup(directData);
-      response = {
-        success: directResp.ok && Array.isArray(domains) && domains.length > 0,
-        domains,
-        error: directResp.ok ? '未获取到域名列表' : (directData?.message || directData?.error || `请求失败(${directResp.status})`)
-      };
-    }
 
     if (!response.success) {
       throw new Error(response.error || '获取失败');
@@ -856,47 +832,6 @@ async function loadMoEmailDomains() {
     moemailLoadDomainsBtn.disabled = false;
     moemailLoadDomainsBtn.textContent = '获取域名';
   }
-}
-
-function extractDomainListForPopup(input) {
-  const found = new Set();
-  const domainRegex = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
-
-  const pushCandidate = (value) => {
-    if (typeof value !== 'string') return;
-    const parts = value
-      .split(/[\s,;|]+/)
-      .map(part => part.trim().replace(/^@/, '').toLowerCase())
-      .filter(Boolean);
-
-    for (const normalized of parts) {
-      if (domainRegex.test(normalized)) {
-        found.add(normalized);
-      }
-    }
-  };
-
-  const walk = (node) => {
-    if (!node) return;
-    if (typeof node === 'string') {
-      pushCandidate(node);
-      return;
-    }
-    if (Array.isArray(node)) {
-      node.forEach(walk);
-      return;
-    }
-    if (typeof node === 'object') {
-      pushCandidate(node.domain);
-      pushCandidate(node.name);
-      pushCandidate(node.value);
-      pushCandidate(node.host);
-      Object.values(node).forEach(walk);
-    }
-  };
-
-  walk(input);
-  return Array.from(found);
 }
 
 function renderFingerprintPreview(fp) {
