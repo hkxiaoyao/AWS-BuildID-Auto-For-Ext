@@ -1473,6 +1473,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ success: true });
       break;
 
+    case 'DELETE_HISTORY_ITEM':
+      registrationHistory = registrationHistory.filter(r => r.id !== message.id);
+      chrome.storage.local.set({ registrationHistory });
+      sendResponse({ success: true });
+      break;
+
     case 'EXPORT_HISTORY':
       sendResponse({ history: registrationHistory });
       break;

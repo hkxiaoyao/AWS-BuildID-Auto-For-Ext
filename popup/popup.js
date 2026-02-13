@@ -269,6 +269,7 @@ function renderHistory(history) {
         ${item.success && item.token ? `<button class="kiro-btn" data-id="${item.id}" title="同步至 Kiro IDE">Kiro</button>` : ''}
         ${item.success && item.token ? `<button class="copy-json-btn" data-id="${item.id}" title="复制为 JSON">JSON</button>` : ''}
         <button class="copy-btn-record" data-id="${item.id}">复制</button>
+        <button class="delete-btn-record" data-id="${item.id}" title="删除此记录">&#x2715;</button>
       </div>
     </div>
   `;
@@ -295,6 +296,16 @@ historyList.addEventListener('click', async (e) => {
   if (target.classList.contains('copy-btn-record')) {
     const id = target.getAttribute('data-id');
     await copyRecord(id);
+  }
+
+  // 删除按钮
+  if (target.classList.contains('delete-btn-record')) {
+    const id = target.getAttribute('data-id');
+    await chrome.runtime.sendMessage({ type: 'DELETE_HISTORY_ITEM', id });
+    target.closest('.history-item').remove();
+    if (historyList.children.length === 0) {
+      historyList.innerHTML = '<div class="history-empty">暂无记录</div>';
+    }
   }
 });
 

@@ -487,6 +487,18 @@ body {
   background: linear-gradient(135deg, #ff7b00, #e66a00);
 }
 
+.history-actions .delete-btn-record {
+  color: #999;
+  font-size: 12px;
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.history-actions .delete-btn-record:hover {
+  color: #e53935;
+  background: #fde8e8;
+}
+
 /* 底部 */
 .footer {
   margin-top: 12px;
