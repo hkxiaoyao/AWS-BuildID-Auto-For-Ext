@@ -1,0 +1,284 @@
+{
+  "extName": {
+    "message": "AWS Auto Registration"
+  },
+  "extDescription": {
+    "message": "AWS Builder ID 自动注册工具"
+  },
+  "appTitle": {
+    "message": "AWS 自动注册"
+  },
+  "appSubtitle": {
+    "message": "Builder ID 一键注册工具"
+  },
+  "statusReady": {
+    "message": "准备就绪"
+  },
+  "statusRunning": {
+    "message": "注册进行中"
+  },
+  "statusCompleted": {
+    "message": "全部完成"
+  },
+  "statusError": {
+    "message": "发生错误"
+  },
+  "statusValidating": {
+    "message": "正在验证..."
+  },
+  "sessionsTitle": {
+    "message": "运行中的会话"
+  },
+  "mailConfigTitle": {
+    "message": "邮箱配置"
+  },
+  "mailProviderLabel": {
+    "message": "邮箱渠道"
+  },
+  "mailProviderGmail": {
+    "message": "Gmail (需配置)"
+  },
+  "mailProviderGuerrilla": {
+    "message": "Guerrilla Mail (免配置)"
+  },
+  "mailProviderGptmail": {
+    "message": "GPTMail (需 API Key)"
+  },
+  "mailProviderDuckmail": {
+    "message": "DuckMail (可选 API Key)"
+  },
+  "mailProviderMoemail": {
+    "message": "MoeMail (需 API Key)"
+  },
+  "gmailPlaceholder": {
+    "message": "输入你的 Gmail 地址"
+  },
+  "btnSave": {
+    "message": "保存"
+  },
+  "btnAuthorize": {
+    "message": "授权 Gmail API"
+  },
+  "btnReauthorize": {
+    "message": "重新授权"
+  },
+  "gmailAuthStatus": {
+    "message": "✓ 已授权"
+  },
+  "gmailSenderPlaceholder": {
+    "message": "验证码发件人"
+  },
+  "gmailHint": {
+    "message": "授权后可自动获取验证码，无需手动填写"
+  },
+  "guerrillaInfo": {
+    "message": "✓ 无需配置，自动生成临时邮箱"
+  },
+  "guerrillaDesc": {
+    "message": "每次注册自动获取新的临时邮箱地址，验证码自动获取"
+  },
+  "gptmailApiKeyPlaceholder": {
+    "message": "API Key (默认: gpt-test)"
+  },
+  "gptmailHint": {
+    "message": "✓ 自动随机生成邮箱，验证码自动获取"
+  },
+  "gptmailDesc": {
+    "message": "默认使用测试 Key，每日限 20 万次调用"
+  },
+  "duckmailApiKeyPlaceholder": {
+    "message": "API Key (可选，以 dk_ 开头)"
+  },
+  "duckmailHint": {
+    "message": "✓ 随机用户名，验证码自动获取"
+  },
+  "duckmailDesc": {
+    "message": "不填 API Key 可用公共域名，填写后可用私有域名"
+  },
+  "btnRefresh": {
+    "message": "刷新"
+  },
+  "loadingDomains": {
+    "message": "加载域名中..."
+  },
+  "moemailApiUrlPlaceholder": {
+    "message": "http://your-api-url"
+  },
+  "btnTest": {
+    "message": "测试"
+  },
+  "moemailApiKeyPlaceholder": {
+    "message": "API Key (必填)"
+  },
+  "moemailDuration1h": {
+    "message": "1小时"
+  },
+  "moemailDuration1d": {
+    "message": "1天"
+  },
+  "moemailDuration7d": {
+    "message": "7天"
+  },
+  "moemailDurationPermanent": {
+    "message": "永久"
+  },
+  "moemailPrefixPlaceholder": {
+    "message": "固定前缀 (可选)"
+  },
+  "moemailRandomLengthPlaceholder": {
+    "message": "随机位数"
+  },
+  "moemailPreviewLabel": {
+    "message": "预览:"
+  },
+  "moemailHint": {
+    "message": "✓ 自定义邮箱前缀和域名，验证码自动获取"
+  },
+  "settingsTitle": {
+    "message": "设置"
+  },
+  "labelRegCount": {
+    "message": "注册数量"
+  },
+  "labelConcurrency": {
+    "message": "并发窗口"
+  },
+  "settingsHint": {
+    "message": "⚠️ 使用 Gmail 别名模式时，建议并发设为 1"
+  },
+  "labelDenyAccess": {
+    "message": "授权页点击拒绝（增强账号安全）"
+  },
+  "labelProxyEnabled": {
+    "message": "启用代理提取"
+  },
+  "proxyManualPlaceholder": {
+    "message": "手动代理列表（每行一个）\n格式: socks5://ip:port\nhttp://user:pass@ip:port\nip:port"
+  },
+  "labelProxyUsageLimit": {
+    "message": "单代理注册次数:"
+  },
+  "labelIpDetectApi": {
+    "message": "IP 检测 API:"
+  },
+  "labelPageTimeout": {
+    "message": "页面超时(秒):"
+  },
+  "proxyApiUrlPlaceholder": {
+    "message": "代理提取 API 地址（可选）"
+  },
+  "proxyApiKeyPlaceholder": {
+    "message": "API Key（可选）"
+  },
+  "btnStart": {
+    "message": "开始注册"
+  },
+  "btnStop": {
+    "message": "停止"
+  },
+  "btnReset": {
+    "message": "重新开始"
+  },
+  "currentAccountTitle": {
+    "message": "当前账号"
+  },
+  "labelEmail": {
+    "message": "邮箱"
+  },
+  "labelPassword": {
+    "message": "密码"
+  },
+  "btnCopy": {
+    "message": "复制"
+  },
+  "btnCopied": {
+    "message": "已复制"
+  },
+  "tokenTitle": {
+    "message": "Token"
+  },
+  "labelAccessToken": {
+    "message": "Access Token"
+  },
+  "historyTitle": {
+    "message": "注册历史"
+  },
+  "btnValidate": {
+    "message": "验证"
+  },
+  "btnExportJson": {
+    "message": "JSON"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "btnClear": {
+    "message": "清空"
+  },
+  "historyEmpty": {
+    "message": "暂无记录"
+  },
+  "tokenStatusValid": {
+    "message": "有效"
+  },
+  "tokenStatusSuspended": {
+    "message": "封禁"
+  },
+  "tokenStatusExpired": {
+    "message": "过期"
+  },
+  "tokenStatusInvalid": {
+    "message": "无效"
+  },
+  "tokenStatusError": {
+    "message": "错误"
+  },
+  "tokenStatusUnknown": {
+    "message": "未验证"
+  },
+  "btnKiro": {
+    "message": "Kiro"
+  },
+  "btnJson": {
+    "message": "JSON"
+  },
+  "btnDelete": {
+    "message": "删除"
+  },
+  "tokenPoolTitle": {
+    "message": "Token Pool"
+  },
+  "btnUpload": {
+    "message": "上传"
+  },
+  "poolApiKeyPlaceholder": {
+    "message": "输入 API Key"
+  },
+  "btnConnect": {
+    "message": "连接"
+  },
+  "poolHint": {
+    "message": "在 Token Pool 网站生成 API Key"
+  },
+  "btnDisconnect": {
+    "message": "断开"
+  },
+  "labelPoints": {
+    "message": "积分"
+  },
+  "footerText": {
+    "message": "无痕模式需在扩展设置中启用"
+  },
+  "languageLabel": {
+    "message": "语言"
+  },
+  "languageChinese": {
+    "message": "中文"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageTurkish": {
+    "message": "Türkçe"
+  }
+}

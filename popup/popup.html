@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +9,27 @@
 <body>
   <div class="container">
     <header class="header">
-      <h1>AWS 自动注册</h1>
-      <p class="subtitle">Builder ID 一键注册工具</p>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h1 data-i18n="appTitle">AWS 自动注册</h1>
+          <p class="subtitle" data-i18n="appSubtitle">Builder ID 一键注册工具</p>
+        </div>
+        <div class="language-selector">
+          <label for="language-select" data-i18n="languageLabel" style="font-size: 11px; margin-right: 4px;">语言</label>
+          <select id="language-select" style="font-size: 11px; padding: 2px 4px;">
+            <option value="zh_CN">中文</option>
+            <option value="en">English</option>
+            <option value="tr">Türkçe</option>
+          </select>
+        </div>
+      </div>
     </header>
 
     <!-- 状态显示区域 -->
     <div id="status-section" class="section">
       <div class="status-indicator">
         <span id="status-dot" class="dot idle"></span>
-        <span id="status-text">准备就绪</span>
+        <span id="status-text" data-i18n="statusReady">准备就绪</span>
         <span id="counter" class="counter" style="display: none;"></span>
       </div>
       <div id="step-text" class="step-text"></div>
@@ -26,122 +38,122 @@
     <!-- 验证状态提示 -->
     <div id="validate-section" class="section validate-section" style="display: none;">
       <div class="validate-info">
-        <span id="validate-text">正在验证...</span>
+        <span id="validate-text" data-i18n="statusValidating">正在验证...</span>
       </div>
     </div>
 
     <!-- 并发会话状态 -->
     <div id="sessions-section" class="section" style="display: none;">
-      <h2>运行中的会话</h2>
+      <h2 data-i18n="sessionsTitle">运行中的会话</h2>
       <div id="sessions-list" class="sessions-list"></div>
     </div>
 
     <!-- 邮箱渠道配置区域 -->
     <div id="mail-section" class="section mail-section">
       <div class="section-header">
-        <h2>邮箱配置</h2>
+        <h2 data-i18n="mailConfigTitle">邮箱配置</h2>
       </div>
 
       <!-- 渠道选择 -->
       <div class="provider-select-row">
-        <label for="mail-provider-select">邮箱渠道</label>
+        <label for="mail-provider-select" data-i18n="mailProviderLabel">邮箱渠道</label>
         <select id="mail-provider-select" class="provider-select">
-          <option value="gmail">Gmail (需配置)</option>
-          <option value="guerrilla">Guerrilla Mail (免配置)</option>
-          <option value="gptmail">GPTMail (需 API Key)</option>
-          <option value="duckmail">DuckMail (可选 API Key)</option>
-          <option value="moemail">MoeMail (需 API Key)</option>
+          <option value="gmail" data-i18n="mailProviderGmail">Gmail (需配置)</option>
+          <option value="guerrilla" data-i18n="mailProviderGuerrilla">Guerrilla Mail (免配置)</option>
+          <option value="gptmail" data-i18n="mailProviderGptmail">GPTMail (需 API Key)</option>
+          <option value="duckmail" data-i18n="mailProviderDuckmail">DuckMail (可选 API Key)</option>
+          <option value="moemail" data-i18n="mailProviderMoemail">MoeMail (需 API Key)</option>
         </select>
       </div>
 
       <!-- Gmail 配置面板 -->
       <div id="gmail-config-panel" class="provider-panel">
         <div class="gmail-input-row">
-          <input type="email" id="gmail-address" placeholder="输入你的 Gmail 地址" class="gmail-input">
-          <button id="gmail-save-btn" class="btn-small">保存</button>
+          <input type="email" id="gmail-address" data-i18n-placeholder="gmailPlaceholder" placeholder="输入你的 Gmail 地址" class="gmail-input">
+          <button id="gmail-save-btn" class="btn-small" data-i18n="btnSave">保存</button>
         </div>
 
         <!-- Gmail API 授权 -->
         <div class="gmail-oauth-row">
-          <button id="gmail-auth-btn" class="btn-small btn-small-primary">授权 Gmail API</button>
+          <button id="gmail-auth-btn" class="btn-small btn-small-primary" data-i18n="btnAuthorize">授权 Gmail API</button>
           <span id="gmail-auth-status" class="gmail-auth-status"></span>
         </div>
 
         <!-- 验证码发件人配置 -->
         <div class="gmail-sender-row">
-          <input type="text" id="gmail-sender" placeholder="验证码发件人" value="no-reply@signin.aws" class="gmail-input gmail-sender-input">
-          <button id="gmail-sender-save-btn" class="btn-small">保存</button>
+          <input type="text" id="gmail-sender" data-i18n-placeholder="gmailSenderPlaceholder" placeholder="验证码发件人" value="no-reply@signin.aws" class="gmail-input gmail-sender-input">
+          <button id="gmail-sender-save-btn" class="btn-small" data-i18n="btnSave">保存</button>
         </div>
 
-        <p class="gmail-hint">授权后可自动获取验证码，无需手动填写</p>
+        <p class="gmail-hint" data-i18n="gmailHint">授权后可自动获取验证码，无需手动填写</p>
         <p class="gmail-status" id="gmail-status"></p>
       </div>
 
       <!-- Guerrilla Mail 配置面板 -->
       <div id="guerrilla-config-panel" class="provider-panel" style="display: none;">
         <div class="guerrilla-info">
-          <p class="provider-hint success">✓ 无需配置，自动生成临时邮箱</p>
-          <p class="provider-desc">每次注册自动获取新的临时邮箱地址，验证码自动获取</p>
+          <p class="provider-hint success" data-i18n="guerrillaInfo">✓ 无需配置，自动生成临时邮箱</p>
+          <p class="provider-desc" data-i18n="guerrillaDesc">每次注册自动获取新的临时邮箱地址，验证码自动获取</p>
         </div>
       </div>
 
       <!-- GPTMail 配置面板 -->
       <div id="gptmail-config-panel" class="provider-panel" style="display: none;">
         <div class="gmail-input-row">
-          <input type="text" id="gptmail-apikey" placeholder="API Key (默认: gpt-test)" class="gmail-input" value="gpt-test">
-          <button id="gptmail-save-btn" class="btn-small">保存</button>
+          <input type="text" id="gptmail-apikey" data-i18n-placeholder="gptmailApiKeyPlaceholder" placeholder="API Key (默认: gpt-test)" class="gmail-input" value="gpt-test">
+          <button id="gptmail-save-btn" class="btn-small" data-i18n="btnSave">保存</button>
         </div>
-        <p class="provider-hint success">✓ 自动随机生成邮箱，验证码自动获取</p>
-        <p class="provider-desc">默认使用测试 Key，每日限 20 万次调用</p>
+        <p class="provider-hint success" data-i18n="gptmailHint">✓ 自动随机生成邮箱，验证码自动获取</p>
+        <p class="provider-desc" data-i18n="gptmailDesc">默认使用测试 Key，每日限 20 万次调用</p>
       </div>
 
       <!-- DuckMail 配置面板 -->
       <div id="duckmail-config-panel" class="provider-panel" style="display: none;">
         <div class="gmail-input-row">
-          <input type="text" id="duckmail-apikey" placeholder="API Key (可选，以 dk_ 开头)" class="gmail-input">
-          <button id="duckmail-apikey-save-btn" class="btn-small">保存</button>
+          <input type="text" id="duckmail-apikey" data-i18n-placeholder="duckmailApiKeyPlaceholder" placeholder="API Key (可选，以 dk_ 开头)" class="gmail-input">
+          <button id="duckmail-apikey-save-btn" class="btn-small" data-i18n="btnSave">保存</button>
         </div>
         <div class="gmail-input-row" style="margin-top: 6px;">
           <select id="duckmail-domain-select" class="provider-select" style="flex: 1;">
-            <option value="">加载域名中...</option>
+            <option value="" data-i18n="loadingDomains">加载域名中...</option>
           </select>
-          <button id="duckmail-refresh-domains-btn" class="btn-small">刷新</button>
+          <button id="duckmail-refresh-domains-btn" class="btn-small" data-i18n="btnRefresh">刷新</button>
         </div>
-        <p class="provider-hint success">✓ 随机用户名，验证码自动获取</p>
-        <p class="provider-desc">不填 API Key 可用公共域名，填写后可用私有域名</p>
+        <p class="provider-hint success" data-i18n="duckmailHint">✓ 随机用户名，验证码自动获取</p>
+        <p class="provider-desc" data-i18n="duckmailDesc">不填 API Key 可用公共域名，填写后可用私有域名</p>
       </div>
 
       <!-- MoeMail 配置面板 -->
       <div id="moemail-config-panel" class="provider-panel" style="display: none;">
         <div class="gmail-input-row">
-          <input type="url" id="moemail-api-url" placeholder="http://your-api-url" class="gmail-input">
-          <button id="moemail-test-connection-btn" class="btn-small">测试</button>
+          <input type="url" id="moemail-api-url" data-i18n-placeholder="moemailApiUrlPlaceholder" placeholder="http://your-api-url" class="gmail-input">
+          <button id="moemail-test-connection-btn" class="btn-small" data-i18n="btnTest">测试</button>
         </div>
         <div class="gmail-input-row" style="margin-top: 6px;">
-          <input type="text" id="moemail-api-key" placeholder="API Key (必填)" class="gmail-input">
-          <button id="moemail-save-api-btn" class="btn-small">保存</button>
+          <input type="text" id="moemail-api-key" data-i18n-placeholder="moemailApiKeyPlaceholder" placeholder="API Key (必填)" class="gmail-input">
+          <button id="moemail-save-api-btn" class="btn-small" data-i18n="btnSave">保存</button>
         </div>
         <div class="gmail-input-row" style="margin-top: 6px;">
           <select id="moemail-duration-select" class="provider-select" style="flex: 1;">
-            <option value="3600000">1小时</option>
-            <option value="86400000">1天</option>
-            <option value="604800000">7天</option>
-            <option value="0" selected>永久</option>
+            <option value="3600000" data-i18n="moemailDuration1h">1小时</option>
+            <option value="86400000" data-i18n="moemailDuration1d">1天</option>
+            <option value="604800000" data-i18n="moemailDuration7d">7天</option>
+            <option value="0" selected data-i18n="moemailDurationPermanent">永久</option>
           </select>
           <select id="moemail-domain-select" class="provider-select" style="flex: 1;">
-            <option value="">加载域名中...</option>
+            <option value="" data-i18n="loadingDomains">加载域名中...</option>
           </select>
-          <button id="moemail-refresh-domains-btn" class="btn-small">刷新</button>
+          <button id="moemail-refresh-domains-btn" class="btn-small" data-i18n="btnRefresh">刷新</button>
         </div>
         <div class="gmail-input-row" style="margin-top: 6px;">
-          <input type="text" id="moemail-prefix" placeholder="固定前缀 (可选)" class="gmail-input" style="flex: 1;">
-          <input type="number" id="moemail-random-length" min="3" max="10" value="5" class="gmail-input" style="width: 80px;" placeholder="随机位数">
+          <input type="text" id="moemail-prefix" data-i18n-placeholder="moemailPrefixPlaceholder" placeholder="固定前缀 (可选)" class="gmail-input" style="flex: 1;">
+          <input type="number" id="moemail-random-length" min="3" max="10" value="5" class="gmail-input" style="width: 80px;" data-i18n-placeholder="moemailRandomLengthPlaceholder" placeholder="随机位数">
         </div>
         <div class="gmail-input-row" style="margin-top: 6px; background: #f9f9f9; padding: 8px; border-radius: 4px;">
-          <span style="font-size: 11px; color: #666;">预览:</span>
+          <span style="font-size: 11px; color: #666;" data-i18n="moemailPreviewLabel">预览:</span>
           <code id="moemail-preview-text" style="font-size: 12px; color: #232f3e; margin-left: 8px;">配置完成后显示</code>
         </div>
-        <p class="provider-hint success">✓ 自定义邮箱前缀和域名，验证码自动获取</p>
+        <p class="provider-hint success" data-i18n="moemailHint">✓ 自定义邮箱前缀和域名，验证码自动获取</p>
         <p id="moemail-status" class="provider-desc"></p>
       </div>
     </div>
@@ -150,52 +162,52 @@
     <div id="settings-section" class="section settings-section">
       <div class="settings-row">
         <div class="setting-item">
-          <label>注册数量</label>
+          <label data-i18n="labelRegCount">注册数量</label>
           <input type="number" id="loop-count" min="1" max="100" value="1" class="setting-input">
         </div>
         <div class="setting-item">
-          <label>并发窗口</label>
+          <label data-i18n="labelConcurrency">并发窗口</label>
           <input type="number" id="concurrency" min="1" max="3" value="1" class="setting-input">
         </div>
       </div>
-      <p class="settings-hint">⚠️ 使用 Gmail 别名模式时，建议并发设为 1</p>
+      <p class="settings-hint" data-i18n="settingsHint">⚠️ 使用 Gmail 别名模式时，建议并发设为 1</p>
       <div class="settings-row">
         <div class="setting-item" style="flex: 1;">
           <label>
-            <input type="checkbox" id="deny-access-toggle"> 授权页点击拒绝（增强账号安全）
+            <input type="checkbox" id="deny-access-toggle"> <span data-i18n="labelDenyAccess">授权页点击拒绝（增强账号安全）</span>
           </label>
         </div>
       </div>
       <div class="settings-row" style="margin-top: 8px;">
         <div class="setting-item" style="flex: 1;">
           <label>
-            <input type="checkbox" id="proxy-enabled-toggle"> 启用代理提取
+            <input type="checkbox" id="proxy-enabled-toggle"> <span data-i18n="labelProxyEnabled">启用代理提取</span>
           </label>
         </div>
       </div>
       <div id="proxy-config-panel" style="display: none; margin-top: 6px;">
         <div class="gmail-input-row">
-          <textarea id="proxy-manual-list" placeholder="手动代理列表（每行一个）&#10;格式: socks5://ip:port&#10;http://user:pass@ip:port&#10;ip:port" class="gmail-input" style="flex: 1; min-height: 60px; resize: vertical; font-size: 11px;"></textarea>
+          <textarea id="proxy-manual-list" data-i18n-placeholder="proxyManualPlaceholder" placeholder="手动代理列表（每行一个）&#10;格式: socks5://ip:port&#10;http://user:pass@ip:port&#10;ip:port" class="gmail-input" style="flex: 1; min-height: 60px; resize: vertical; font-size: 11px;"></textarea>
         </div>
         <p id="proxy-parsed-count" class="provider-desc" style="margin-top: 2px; font-size: 11px;"></p>
         <div class="gmail-input-row" style="margin-top: 4px; align-items: center;">
-          <label style="font-size: 11px; white-space: nowrap;">单代理注册次数:</label>
+          <label style="font-size: 11px; white-space: nowrap;" data-i18n="labelProxyUsageLimit">单代理注册次数:</label>
           <input type="number" id="proxy-usage-limit" min="1" max="100" value="1" class="gmail-input" style="width: 50px; text-align: center;">
         </div>
         <div style="margin-top: 4px;">
-          <label style="font-size: 11px;">IP 检测 API:</label>
+          <label style="font-size: 11px;" data-i18n="labelIpDetectApi">IP 检测 API:</label>
           <div id="ip-detect-checkboxes" style="display: flex; gap: 8px; margin-top: 2px; flex-wrap: wrap;"></div>
         </div>
         <div class="gmail-input-row" style="margin-top: 4px; align-items: center;">
-          <label style="font-size: 11px; white-space: nowrap;">页面超时(秒):</label>
+          <label style="font-size: 11px; white-space: nowrap;" data-i18n="labelPageTimeout">页面超时(秒):</label>
           <input type="number" id="page-timeout-input" min="30" max="600" value="300" class="gmail-input" style="width: 60px; text-align: center;">
         </div>
         <div class="gmail-input-row" style="margin-top: 4px;">
-          <input type="text" id="proxy-api-url" placeholder="代理提取 API 地址（可选）" class="gmail-input" style="flex: 1;">
+          <input type="text" id="proxy-api-url" data-i18n-placeholder="proxyApiUrlPlaceholder" placeholder="代理提取 API 地址（可选）" class="gmail-input" style="flex: 1;">
         </div>
         <div class="gmail-input-row" style="margin-top: 4px;">
-          <input type="text" id="proxy-api-key" placeholder="API Key（可选）" class="gmail-input" style="flex: 1;">
-          <button id="proxy-test-btn" class="gmail-btn">测试</button>
+          <input type="text" id="proxy-api-key" data-i18n-placeholder="proxyApiKeyPlaceholder" placeholder="API Key（可选）" class="gmail-input" style="flex: 1;">
+          <button id="proxy-test-btn" class="gmail-btn" data-i18n="btnTest">测试</button>
         </div>
         <p id="proxy-status" class="provider-desc" style="margin-top: 4px;"></p>
         <div id="proxy-dead-section" style="margin-top: 6px; display: none;">
@@ -210,9 +222,9 @@
 
     <!-- 操作按钮区域 -->
     <div id="action-section" class="section">
-      <button id="start-btn" class="btn btn-primary">开始注册</button>
-      <button id="stop-btn" class="btn btn-danger" style="display: none;">停止</button>
-      <button id="reset-btn" class="btn btn-outline" style="display: none;">重新开始</button>
+      <button id="start-btn" class="btn btn-primary" data-i18n="btnStart">开始注册</button>
+      <button id="stop-btn" class="btn btn-danger" style="display: none;" data-i18n="btnStop">停止</button>
+      <button id="reset-btn" class="btn btn-outline" style="display: none;" data-i18n="btnReset">重新开始</button>
     </div>
 
     <!-- 错误显示 -->
@@ -223,20 +235,20 @@
 
     <!-- 账号信息区域 -->
     <div id="account-section" class="section" style="display: none;">
-      <h2>当前账号</h2>
+      <h2 data-i18n="currentAccountTitle">当前账号</h2>
       <div class="info-grid">
         <div class="info-item">
-          <label>邮箱</label>
+          <label data-i18n="labelEmail">邮箱</label>
           <div class="info-value">
             <span id="email-value">-</span>
-            <button class="copy-btn" data-target="email-value" title="复制">复制</button>
+            <button class="copy-btn" data-target="email-value" data-i18n-title="btnCopy" title="复制" data-i18n="btnCopy">复制</button>
           </div>
         </div>
         <div class="info-item">
-          <label>密码</label>
+          <label data-i18n="labelPassword">密码</label>
           <div class="info-value">
             <span id="password-value">-</span>
-            <button class="copy-btn" data-target="password-value" title="复制">复制</button>
+            <button class="copy-btn" data-target="password-value" data-i18n-title="btnCopy" title="复制" data-i18n="btnCopy">复制</button>
           </div>
         </div>
       </div>
@@ -244,13 +256,13 @@
 
     <!-- Token 结果区域 -->
     <div id="token-section" class="section" style="display: none;">
-      <h2>Token</h2>
+      <h2 data-i18n="tokenTitle">Token</h2>
       <div class="info-grid">
         <div class="info-item full-width">
-          <label>Access Token</label>
+          <label data-i18n="labelAccessToken">Access Token</label>
           <div class="info-value token-value">
             <span id="access-token-value" class="token-text">-</span>
-            <button class="copy-btn" data-target="access-token-value" title="复制">复制</button>
+            <button class="copy-btn" data-target="access-token-value" data-i18n-title="btnCopy" title="复制" data-i18n="btnCopy">复制</button>
           </div>
         </div>
       </div>
@@ -259,49 +271,50 @@
     <!-- 历史记录区域 -->
     <div id="history-section" class="section">
       <div class="section-header">
-        <h2>注册历史</h2>
+        <h2 data-i18n="historyTitle">注册历史</h2>
         <div class="section-actions">
-          <button id="validate-btn" class="btn-small btn-small-primary" title="验证所有 Token 状态">验证</button>
-          <button id="export-btn" class="btn-small" title="导出有效 Token (JSON)">JSON</button>
-          <button id="export-csv-btn" class="btn-small" title="导出完整信息 (CSV)">CSV</button>
-          <button id="clear-btn" class="btn-small btn-small-danger">清空</button>
+          <button id="validate-btn" class="btn-small btn-small-primary" data-i18n-title="btnValidate" title="验证所有 Token 状态" data-i18n="btnValidate">验证</button>
+          <button id="export-btn" class="btn-small" title="导出有效 Token (JSON)" data-i18n="btnExportJson">JSON</button>
+          <button id="export-csv-btn" class="btn-small" title="导出完整信息 (CSV)" data-i18n="btnExportCsv">CSV</button>
+          <button id="clear-btn" class="btn-small btn-small-danger" data-i18n="btnClear">清空</button>
         </div>
       </div>
       <div id="history-list" class="history-list">
-        <div class="history-empty">暂无记录</div>
+        <div class="history-empty" data-i18n="historyEmpty">暂无记录</div>
       </div>
     </div>
 
     <!-- Token Pool 集成 -->
     <div id="token-pool-section" class="section">
       <div class="section-header">
-        <h2>Token Pool</h2>
+        <h2 data-i18n="tokenPoolTitle">Token Pool</h2>
         <div class="section-actions">
-          <button id="pool-upload-btn" class="btn-small btn-small-primary" style="display: none;" title="上传有效 Token 至 Pool">上传</button>
+          <button id="pool-upload-btn" class="btn-small btn-small-primary" style="display: none;" data-i18n-title="btnUpload" title="上传有效 Token 至 Pool" data-i18n="btnUpload">上传</button>
         </div>
       </div>
       <div id="pool-config" class="pool-config">
         <div class="pool-input-row">
-          <input type="text" id="pool-api-key" placeholder="输入 API Key" class="pool-input">
-          <button id="pool-connect-btn" class="btn-small">连接</button>
+          <input type="text" id="pool-api-key" data-i18n-placeholder="poolApiKeyPlaceholder" placeholder="输入 API Key" class="pool-input">
+          <button id="pool-connect-btn" class="btn-small" data-i18n="btnConnect">连接</button>
         </div>
-        <p class="pool-hint">在 Token Pool 网站生成 API Key</p>
+        <p class="pool-hint" data-i18n="poolHint">在 Token Pool 网站生成 API Key</p>
       </div>
       <div id="pool-user-info" class="pool-user-info" style="display: none;">
         <div class="pool-user-row">
           <span class="pool-user-name" id="pool-username">-</span>
-          <span class="pool-user-points" id="pool-points">0 积分</span>
-          <button id="pool-disconnect-btn" class="btn-small btn-small-danger">断开</button>
+          <span class="pool-user-points" id="pool-points">0 <span data-i18n="labelPoints">积分</span></span>
+          <button id="pool-disconnect-btn" class="btn-small btn-small-danger" data-i18n="btnDisconnect">断开</button>
         </div>
       </div>
     </div>
 
     <!-- 底部信息 -->
     <footer class="footer">
-      <p>无痕模式需在扩展设置中启用</p>
+      <p data-i18n="footerText">无痕模式需在扩展设置中启用</p>
     </footer>
   </div>
 
+  <script src="i18n.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

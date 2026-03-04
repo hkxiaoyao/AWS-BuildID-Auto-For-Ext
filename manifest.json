@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "AWS Auto Registration",
+  "name": "__MSG_extName__",
   "version": "1.0.0",
-  "description": "AWS Builder ID 自动注册工具",
+  "description": "__MSG_extDescription__",
+  "default_locale": "zh_CN",
   "permissions": [
     "activeTab",
     "scripting",

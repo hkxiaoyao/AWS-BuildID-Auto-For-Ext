@@ -3,6 +3,23 @@
  * 支持自定义循环次数和多窗口并发
  */
 
+// i18n helper function - use window.i18n from i18n.js
+const i18n = (key) => window.i18n ? window.i18n(key) : key;
+
+// Listen for language changes
+window.addEventListener('languageChanged', () => {
+  // Refresh UI with new language
+  const currentState = {
+    status: statusText.textContent,
+    history: []
+  };
+  chrome.runtime.sendMessage({ type: 'GET_STATE' }).then(response => {
+    if (response?.state) {
+      updateUI(response.state);
+    }
+  });
+});
+
 // DOM 元素
 const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
@@ -109,23 +126,23 @@ function updateUI(state) {
   switch (state.status) {
     case 'idle':
       statusDot.classList.add('idle');
-      statusText.textContent = '准备就绪';
+      statusText.textContent = i18n('statusReady');
       break;
     case 'running':
       statusDot.classList.add('processing');
-      statusText.textContent = '注册进行中';
+      statusText.textContent = i18n('statusRunning');
       break;
     case 'completed':
       statusDot.classList.add('success');
-      statusText.textContent = '全部完成';
+      statusText.textContent = i18n('statusCompleted');
       break;
     case 'error':
       statusDot.classList.add('error');
-      statusText.textContent = '发生错误';
+      statusText.textContent = i18n('statusError');
       break;
     default:
       statusDot.classList.add('idle');
-      statusText.textContent = state.status || '未知状态';
+      statusText.textContent = state.status || i18n('statusReady');
   }
 
   // 计数器
@@ -225,7 +242,7 @@ function renderSessions(sessions) {
  */
 function renderHistory(history) {
   if (!history || history.length === 0) {
-    historyList.innerHTML = '<div class="history-empty">暂无记录</div>';
+    historyList.innerHTML = `<div class="history-empty">${i18n('historyEmpty')}</div>`;
     return;
   }
 
@@ -248,12 +265,12 @@ function renderHistory(history) {
     let tokenBadge = '';
     if (item.success && item.tokenStatus) {
       const badgeLabels = {
-        valid: '有效',
-        suspended: '封禁',
-        expired: '过期',
-        invalid: '无效',
-        error: '错误',
-        unknown: '未验证'
+        valid: i18n('tokenStatusValid'),
+        suspended: i18n('tokenStatusSuspended'),
+        expired: i18n('tokenStatusExpired'),
+        invalid: i18n('tokenStatusInvalid'),
+        error: i18n('tokenStatusError'),
+        unknown: i18n('tokenStatusUnknown')
       };
       tokenBadge = `<span class="token-badge ${item.tokenStatus}">${badgeLabels[item.tokenStatus] || item.tokenStatus}</span>`;
     }
@@ -266,10 +283,10 @@ function renderHistory(history) {
         <div class="history-time">${item.time || ''}</div>
       </div>
       <div class="history-actions">
-        ${item.success && item.token ? `<button class="kiro-btn" data-id="${item.id}" title="同步至 Kiro IDE">Kiro</button>` : ''}
-        ${item.success && item.token ? `<button class="copy-json-btn" data-id="${item.id}" title="复制为 JSON">JSON</button>` : ''}
-        <button class="copy-btn-record" data-id="${item.id}">复制</button>
-        <button class="delete-btn-record" data-id="${item.id}" title="删除此记录">&#x2715;</button>
+        ${item.success && item.token ? `<button class="kiro-btn" data-id="${item.id}" title="${i18n('btnKiro')}">${i18n('btnKiro')}</button>` : ''}
+        ${item.success && item.token ? `<button class="copy-json-btn" data-id="${item.id}" title="${i18n('btnJson')}">${i18n('btnJson')}</button>` : ''}
+        <button class="copy-btn-record" data-id="${item.id}">${i18n('btnCopy')}</button>
+        <button class="delete-btn-record" data-id="${item.id}" title="${i18n('btnDelete')}">&#x2715;</button>
       </div>
     </div>
   `;
@@ -458,7 +475,7 @@ async function copyToClipboard(text, button) {
     await navigator.clipboard.writeText(text);
     button.classList.add('copied');
     const originalText = button.textContent;
-    button.textContent = '已复制';
+    button.textContent = i18n('btnCopied');
     setTimeout(() => {
       button.classList.remove('copied');
       button.textContent = originalText;

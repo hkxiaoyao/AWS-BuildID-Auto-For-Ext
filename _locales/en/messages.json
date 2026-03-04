@@ -1,0 +1,284 @@
+{
+  "extName": {
+    "message": "AWS Auto Registration"
+  },
+  "extDescription": {
+    "message": "AWS Builder ID automatic registration tool"
+  },
+  "appTitle": {
+    "message": "AWS Auto Registration"
+  },
+  "appSubtitle": {
+    "message": "Builder ID One-Click Registration Tool"
+  },
+  "statusReady": {
+    "message": "Ready"
+  },
+  "statusRunning": {
+    "message": "Registration in Progress"
+  },
+  "statusCompleted": {
+    "message": "Completed"
+  },
+  "statusError": {
+    "message": "Error Occurred"
+  },
+  "statusValidating": {
+    "message": "Validating..."
+  },
+  "sessionsTitle": {
+    "message": "Running Sessions"
+  },
+  "mailConfigTitle": {
+    "message": "Email Configuration"
+  },
+  "mailProviderLabel": {
+    "message": "Email Provider"
+  },
+  "mailProviderGmail": {
+    "message": "Gmail (Configuration Required)"
+  },
+  "mailProviderGuerrilla": {
+    "message": "Guerrilla Mail (No Configuration)"
+  },
+  "mailProviderGptmail": {
+    "message": "GPTMail (API Key Required)"
+  },
+  "mailProviderDuckmail": {
+    "message": "DuckMail (Optional API Key)"
+  },
+  "mailProviderMoemail": {
+    "message": "MoeMail (API Key Required)"
+  },
+  "gmailPlaceholder": {
+    "message": "Enter your Gmail address"
+  },
+  "btnSave": {
+    "message": "Save"
+  },
+  "btnAuthorize": {
+    "message": "Authorize Gmail API"
+  },
+  "btnReauthorize": {
+    "message": "Reauthorize"
+  },
+  "gmailAuthStatus": {
+    "message": "✓ Authorized"
+  },
+  "gmailSenderPlaceholder": {
+    "message": "Verification code sender"
+  },
+  "gmailHint": {
+    "message": "Verification code will be automatically retrieved after authorization"
+  },
+  "guerrillaInfo": {
+    "message": "✓ No configuration needed, automatic temporary email"
+  },
+  "guerrillaDesc": {
+    "message": "Automatically gets new temporary email address for each registration, verification code automatic"
+  },
+  "gptmailApiKeyPlaceholder": {
+    "message": "API Key (default: gpt-test)"
+  },
+  "gptmailHint": {
+    "message": "✓ Automatic random email, verification code automatic"
+  },
+  "gptmailDesc": {
+    "message": "Uses test Key by default, 200,000 calls per day limit"
+  },
+  "duckmailApiKeyPlaceholder": {
+    "message": "API Key (optional, starts with dk_)"
+  },
+  "duckmailHint": {
+    "message": "✓ Random username, verification code automatic"
+  },
+  "duckmailDesc": {
+    "message": "Public domain without API Key, private domain with API Key"
+  },
+  "btnRefresh": {
+    "message": "Refresh"
+  },
+  "loadingDomains": {
+    "message": "Loading domains..."
+  },
+  "moemailApiUrlPlaceholder": {
+    "message": "http://your-api-url"
+  },
+  "btnTest": {
+    "message": "Test"
+  },
+  "moemailApiKeyPlaceholder": {
+    "message": "API Key (required)"
+  },
+  "moemailDuration1h": {
+    "message": "1 hour"
+  },
+  "moemailDuration1d": {
+    "message": "1 day"
+  },
+  "moemailDuration7d": {
+    "message": "7 days"
+  },
+  "moemailDurationPermanent": {
+    "message": "Permanent"
+  },
+  "moemailPrefixPlaceholder": {
+    "message": "Fixed prefix (optional)"
+  },
+  "moemailRandomLengthPlaceholder": {
+    "message": "Random length"
+  },
+  "moemailPreviewLabel": {
+    "message": "Preview:"
+  },
+  "moemailHint": {
+    "message": "✓ Custom email prefix and domain, verification code automatic"
+  },
+  "settingsTitle": {
+    "message": "Settings"
+  },
+  "labelRegCount": {
+    "message": "Registration Count"
+  },
+  "labelConcurrency": {
+    "message": "Concurrent Windows"
+  },
+  "settingsHint": {
+    "message": "⚠️ Set concurrency to 1 when using Gmail alias mode"
+  },
+  "labelDenyAccess": {
+    "message": "Click deny on authorization page (enhances account security)"
+  },
+  "labelProxyEnabled": {
+    "message": "Enable proxy extraction"
+  },
+  "proxyManualPlaceholder": {
+    "message": "Manual proxy list (one per line)\nFormat: socks5://ip:port\nhttp://user:pass@ip:port\nip:port"
+  },
+  "labelProxyUsageLimit": {
+    "message": "Registrations per proxy:"
+  },
+  "labelIpDetectApi": {
+    "message": "IP Detection API:"
+  },
+  "labelPageTimeout": {
+    "message": "Page timeout (seconds):"
+  },
+  "proxyApiUrlPlaceholder": {
+    "message": "Proxy extraction API address (optional)"
+  },
+  "proxyApiKeyPlaceholder": {
+    "message": "API Key (optional)"
+  },
+  "btnStart": {
+    "message": "Start Registration"
+  },
+  "btnStop": {
+    "message": "Stop"
+  },
+  "btnReset": {
+    "message": "Restart"
+  },
+  "currentAccountTitle": {
+    "message": "Current Account"
+  },
+  "labelEmail": {
+    "message": "Email"
+  },
+  "labelPassword": {
+    "message": "Password"
+  },
+  "btnCopy": {
+    "message": "Copy"
+  },
+  "btnCopied": {
+    "message": "Copied"
+  },
+  "tokenTitle": {
+    "message": "Token"
+  },
+  "labelAccessToken": {
+    "message": "Access Token"
+  },
+  "historyTitle": {
+    "message": "Registration History"
+  },
+  "btnValidate": {
+    "message": "Validate"
+  },
+  "btnExportJson": {
+    "message": "JSON"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "btnClear": {
+    "message": "Clear"
+  },
+  "historyEmpty": {
+    "message": "No records yet"
+  },
+  "tokenStatusValid": {
+    "message": "Valid"
+  },
+  "tokenStatusSuspended": {
+    "message": "Suspended"
+  },
+  "tokenStatusExpired": {
+    "message": "Expired"
+  },
+  "tokenStatusInvalid": {
+    "message": "Invalid"
+  },
+  "tokenStatusError": {
+    "message": "Error"
+  },
+  "tokenStatusUnknown": {
+    "message": "Not Validated"
+  },
+  "btnKiro": {
+    "message": "Kiro"
+  },
+  "btnJson": {
+    "message": "JSON"
+  },
+  "btnDelete": {
+    "message": "Delete"
+  },
+  "tokenPoolTitle": {
+    "message": "Token Pool"
+  },
+  "btnUpload": {
+    "message": "Upload"
+  },
+  "poolApiKeyPlaceholder": {
+    "message": "Enter API Key"
+  },
+  "btnConnect": {
+    "message": "Connect"
+  },
+  "poolHint": {
+    "message": "Generate API Key from Token Pool website"
+  },
+  "btnDisconnect": {
+    "message": "Disconnect"
+  },
+  "labelPoints": {
+    "message": "Points"
+  },
+  "footerText": {
+    "message": "Incognito mode must be enabled in extension settings"
+  },
+  "languageLabel": {
+    "message": "Language"
+  },
+  "languageChinese": {
+    "message": "中文"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageTurkish": {
+    "message": "Türkçe"
+  }
+}

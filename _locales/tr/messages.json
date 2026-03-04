@@ -1,0 +1,284 @@
+{
+  "extName": {
+    "message": "AWS Otomatik Kayıt"
+  },
+  "extDescription": {
+    "message": "AWS Builder ID otomatik kayıt aracı"
+  },
+  "appTitle": {
+    "message": "AWS Otomatik Kayıt"
+  },
+  "appSubtitle": {
+    "message": "Builder ID Tek Tıkla Kayıt Aracı"
+  },
+  "statusReady": {
+    "message": "Hazır"
+  },
+  "statusRunning": {
+    "message": "Kayıt Devam Ediyor"
+  },
+  "statusCompleted": {
+    "message": "Tamamlandı"
+  },
+  "statusError": {
+    "message": "Hata Oluştu"
+  },
+  "statusValidating": {
+    "message": "Doğrulanıyor..."
+  },
+  "sessionsTitle": {
+    "message": "Çalışan Oturumlar"
+  },
+  "mailConfigTitle": {
+    "message": "E-posta Yapılandırması"
+  },
+  "mailProviderLabel": {
+    "message": "E-posta Sağlayıcı"
+  },
+  "mailProviderGmail": {
+    "message": "Gmail (Yapılandırma Gerekli)"
+  },
+  "mailProviderGuerrilla": {
+    "message": "Guerrilla Mail (Yapılandırma Gerektirmez)"
+  },
+  "mailProviderGptmail": {
+    "message": "GPTMail (API Key Gerekli)"
+  },
+  "mailProviderDuckmail": {
+    "message": "DuckMail (İsteğe Bağlı API Key)"
+  },
+  "mailProviderMoemail": {
+    "message": "MoeMail (API Key Gerekli)"
+  },
+  "gmailPlaceholder": {
+    "message": "Gmail adresinizi girin"
+  },
+  "btnSave": {
+    "message": "Kaydet"
+  },
+  "btnAuthorize": {
+    "message": "Gmail API Yetkilendir"
+  },
+  "btnReauthorize": {
+    "message": "Yeniden Yetkilendir"
+  },
+  "gmailAuthStatus": {
+    "message": "✓ Yetkilendirildi"
+  },
+  "gmailSenderPlaceholder": {
+    "message": "Doğrulama kodu gönderen"
+  },
+  "gmailHint": {
+    "message": "Yetkilendirme sonrası doğrulama kodu otomatik alınır"
+  },
+  "guerrillaInfo": {
+    "message": "✓ Yapılandırma gerektirmez, otomatik geçici e-posta"
+  },
+  "guerrillaDesc": {
+    "message": "Her kayıtta otomatik yeni geçici e-posta adresi, doğrulama kodu otomatik"
+  },
+  "gptmailApiKeyPlaceholder": {
+    "message": "API Key (varsayılan: gpt-test)"
+  },
+  "gptmailHint": {
+    "message": "✓ Otomatik rastgele e-posta, doğrulama kodu otomatik"
+  },
+  "gptmailDesc": {
+    "message": "Varsayılan test Key kullanır, günlük 200.000 çağrı limiti"
+  },
+  "duckmailApiKeyPlaceholder": {
+    "message": "API Key (isteğe bağlı, dk_ ile başlar)"
+  },
+  "duckmailHint": {
+    "message": "✓ Rastgele kullanıcı adı, doğrulama kodu otomatik"
+  },
+  "duckmailDesc": {
+    "message": "API Key olmadan genel domain, API Key ile özel domain"
+  },
+  "btnRefresh": {
+    "message": "Yenile"
+  },
+  "loadingDomains": {
+    "message": "Domain'ler yükleniyor..."
+  },
+  "moemailApiUrlPlaceholder": {
+    "message": "http://api-url-adresiniz"
+  },
+  "btnTest": {
+    "message": "Test"
+  },
+  "moemailApiKeyPlaceholder": {
+    "message": "API Key (zorunlu)"
+  },
+  "moemailDuration1h": {
+    "message": "1 saat"
+  },
+  "moemailDuration1d": {
+    "message": "1 gün"
+  },
+  "moemailDuration7d": {
+    "message": "7 gün"
+  },
+  "moemailDurationPermanent": {
+    "message": "Kalıcı"
+  },
+  "moemailPrefixPlaceholder": {
+    "message": "Sabit önek (isteğe bağlı)"
+  },
+  "moemailRandomLengthPlaceholder": {
+    "message": "Rastgele karakter sayısı"
+  },
+  "moemailPreviewLabel": {
+    "message": "Önizleme:"
+  },
+  "moemailHint": {
+    "message": "✓ Özel e-posta öneki ve domain, doğrulama kodu otomatik"
+  },
+  "settingsTitle": {
+    "message": "Ayarlar"
+  },
+  "labelRegCount": {
+    "message": "Kayıt Sayısı"
+  },
+  "labelConcurrency": {
+    "message": "Eşzamanlı Pencere"
+  },
+  "settingsHint": {
+    "message": "⚠️ Gmail takma ad modunda eşzamanlılığı 1'e ayarlayın"
+  },
+  "labelDenyAccess": {
+    "message": "Yetkilendirme sayfasında reddet (hesap güvenliğini artırır)"
+  },
+  "labelProxyEnabled": {
+    "message": "Proxy çıkarımını etkinleştir"
+  },
+  "proxyManualPlaceholder": {
+    "message": "Manuel proxy listesi (her satırda bir)\nFormat: socks5://ip:port\nhttp://user:pass@ip:port\nip:port"
+  },
+  "labelProxyUsageLimit": {
+    "message": "Proxy başına kayıt sayısı:"
+  },
+  "labelIpDetectApi": {
+    "message": "IP Tespit API:"
+  },
+  "labelPageTimeout": {
+    "message": "Sayfa zaman aşımı (saniye):"
+  },
+  "proxyApiUrlPlaceholder": {
+    "message": "Proxy çıkarım API adresi (isteğe bağlı)"
+  },
+  "proxyApiKeyPlaceholder": {
+    "message": "API Key (isteğe bağlı)"
+  },
+  "btnStart": {
+    "message": "Kayda Başla"
+  },
+  "btnStop": {
+    "message": "Durdur"
+  },
+  "btnReset": {
+    "message": "Yeniden Başlat"
+  },
+  "currentAccountTitle": {
+    "message": "Mevcut Hesap"
+  },
+  "labelEmail": {
+    "message": "E-posta"
+  },
+  "labelPassword": {
+    "message": "Şifre"
+  },
+  "btnCopy": {
+    "message": "Kopyala"
+  },
+  "btnCopied": {
+    "message": "Kopyalandı"
+  },
+  "tokenTitle": {
+    "message": "Token"
+  },
+  "labelAccessToken": {
+    "message": "Access Token"
+  },
+  "historyTitle": {
+    "message": "Kayıt Geçmişi"
+  },
+  "btnValidate": {
+    "message": "Doğrula"
+  },
+  "btnExportJson": {
+    "message": "JSON"
+  },
+  "btnExportCsv": {
+    "message": "CSV"
+  },
+  "btnClear": {
+    "message": "Temizle"
+  },
+  "historyEmpty": {
+    "message": "Henüz kayıt yok"
+  },
+  "tokenStatusValid": {
+    "message": "Geçerli"
+  },
+  "tokenStatusSuspended": {
+    "message": "Askıya Alındı"
+  },
+  "tokenStatusExpired": {
+    "message": "Süresi Doldu"
+  },
+  "tokenStatusInvalid": {
+    "message": "Geçersiz"
+  },
+  "tokenStatusError": {
+    "message": "Hata"
+  },
+  "tokenStatusUnknown": {
+    "message": "Doğrulanmadı"
+  },
+  "btnKiro": {
+    "message": "Kiro"
+  },
+  "btnJson": {
+    "message": "JSON"
+  },
+  "btnDelete": {
+    "message": "Sil"
+  },
+  "tokenPoolTitle": {
+    "message": "Token Pool"
+  },
+  "btnUpload": {
+    "message": "Yükle"
+  },
+  "poolApiKeyPlaceholder": {
+    "message": "API Key girin"
+  },
+  "btnConnect": {
+    "message": "Bağlan"
+  },
+  "poolHint": {
+    "message": "Token Pool web sitesinden API Key oluşturun"
+  },
+  "btnDisconnect": {
+    "message": "Bağlantıyı Kes"
+  },
+  "labelPoints": {
+    "message": "Puan"
+  },
+  "footerText": {
+    "message": "Gizli mod eklenti ayarlarından etkinleştirilmelidir"
+  },
+  "languageLabel": {
+    "message": "Dil"
+  },
+  "languageChinese": {
+    "message": "中文"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageTurkish": {
+    "message": "Türkçe"
+  }
+}
